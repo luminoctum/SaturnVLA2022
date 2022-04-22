@@ -2,8 +2,8 @@
 from pylab import *
 
 # S band
-data = genfromtxt('../dat/sat-c-witb.dat')
-latbins = arange(0., 92., 4.)
+data = genfromtxt('../dat/sat-s-witb.dat')
+latbins = arange(0., 90., 4.)
 latg = data[:,1]
 lonw = data[:,3]
 mu = data[:,4]
@@ -12,17 +12,27 @@ fname = '../dat/vla_saturn_s.txt'
 with open(fname, 'w') as file:
   file.write('# VLA smeared map of saturn, S band, 13.33 - 15.04 cm, 2 - 2.25 GHz\n')
   file.write('#%9s%10s%10s%10s%10s%10s%10s\n' % ('LATG1', 'LATG2', 'TB', 'sTB', 'MU', 'sMU', 'N'))
-  for i in range(1, len(latbins)):
-    ix = where((latg > latbins[i-1]) & (latg < latbins[i]))[0]
-    lonmin, lonmax = min(lonw[ix]), max(lonw[ix])
-    #print('latbin = %.1f - %.1f' % (latbins[i-1], latbins[i]))
+  i, j = 0, 1
+  while i < j:
+    if j == len(latbins) - 1:
+      break
+    ix = where((latg > latbins[i]) & (latg < latbins[j]))[0]
+    try :
+      lonmin, lonmax = min(lonw[ix]), max(lonw[ix])
+    except ValueError :
+      j += 1
+      continue
+    #print('latbin = %.1f - %.1f' % (latbins[i], latbins[j]))
     #print('min lon = %.1f' % lonmin)
     #print('max lon = %.1f' % lonmax)
     #print('num lon = %d' % len(lonw[ix]))
     # Take 1/4 of the longitudes
     lon1 = lonmin + (lonmax - lonmin)/3.
     lon2 = lonmax - (lonmax - lonmin)/3.
-    iy = where((latg > latbins[i-1]) & (latg < latbins[i]) & (lonw > lon1) & (lonw < lon2))[0]
+    iy = where((latg > latbins[i]) & (latg < latbins[j]) & (lonw > lon1) & (lonw < lon2))[0]
+    if len(lonw[iy]) < 4:
+      j += 1
+      continue
     #print('num lon center = %d' % len(lonw[iy]))
     mu_avg = mean(mu[iy])
     tb_avg = mean(tb[iy])
@@ -31,7 +41,9 @@ with open(fname, 'w') as file:
     #print('tb mean = %.1f, mu mean = %.2f' % (tb_avg, mu_avg))
     #print('tb std = %.1f, mu std = %.2f' % (tb_std, mu_std))
     file.write('%10.1f%10.1f%10.2f%10.2f%10.2f%10.3f%10d\n' %
-        (latbins[i-1], latbins[i], tb_avg, tb_std, mu_avg, mu_std, len(tb[iy])))
+        (latbins[i], latbins[j], tb_avg, tb_std, mu_avg, mu_std, len(tb[iy])))
+    i = j
+    j = i + 1
 print('output file written to %s' % fname)
 
 # C band
@@ -201,7 +213,7 @@ with open(fname, 'w') as file:
     lon2 = lonmax - (lonmax - lonmin)/3.
     iy = where((latg > latbins[i]) & (latg < latbins[j]) & (lonw > lon1) & (lonw < lon2))[0]
     #print(lonw[iy])
-    if len(lonw[iy]) < 4:
+    if len(lonw[iy]) < 8:
       j += 1
       continue
     #print('num lon center = %d' % len(lonw[iy]))
