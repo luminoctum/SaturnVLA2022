@@ -11,7 +11,8 @@ tb = data[:,5]
 fname = '../dat/vla_saturn_s.txt'
 with open(fname, 'w') as file:
   file.write('# VLA smeared map of saturn, S band, 13.33 - 15.04 cm, 2 - 2.25 GHz\n')
-  file.write('#%9s%10s%10s%10s%10s%10s%10s\n' % ('LATG1', 'LATG2', 'TB', 'sTB', 'MU', 'sMU', 'N'))
+  file.write('#%9s%10s%10s%10s%10s%10s%10s%10s\n' % ('LATG1', 'LATG2', 'TB', 'sTB', 'MU',
+      'sMU', 'MUMAX', 'N'))
   i, j = 0, 1
   while i < j:
     if j == len(latbins) - 1:
@@ -35,13 +36,14 @@ with open(fname, 'w') as file:
       continue
     #print('num lon center = %d' % len(lonw[iy]))
     mu_avg = mean(mu[iy])
+    mu_max = max(mu[iy])
     tb_avg = mean(tb[iy])
     mu_std = std(mu[iy])
     tb_std = std(tb[iy])
     #print('tb mean = %.1f, mu mean = %.2f' % (tb_avg, mu_avg))
     #print('tb std = %.1f, mu std = %.2f' % (tb_std, mu_std))
-    file.write('%10.1f%10.1f%10.2f%10.2f%10.2f%10.3f%10d\n' %
-        (latbins[i], latbins[j], tb_avg, tb_std, mu_avg, mu_std, len(tb[iy])))
+    file.write('%10.1f%10.1f%10.2f%10.2f%10.2f%10.3f%10.3f%10d\n' %
+        (latbins[i], latbins[j], tb_avg, tb_std, mu_avg, mu_std, mu_max, len(tb[iy])))
     i = j
     j = i + 1
 print('output file written to %s' % fname)
@@ -55,7 +57,7 @@ mu = data[:,4]
 tb = data[:,5]
 fname = '../dat/vla_saturn_c.txt'
 with open(fname, 'w') as file:
-  file.write('# VLA smeared map of saturn, C band, 7.08 - 7.53 cm, 3.98 - 4.24 GHz\n')
+  file.write('# VLA smeared map of saturn, C band, 7.08 - 7.53 cm, 4. - 4.25 GHz\n')
   file.write('#%9s%10s%10s%10s%10s%10s%10s\n' % ('LATG1', 'LATG2', 'TB', 'sTB', 'MU', 'sMU', 'N'))
   i, j = 0, 1
   while i < j:

@@ -33,15 +33,16 @@ for i in range(nbands):
   lat2 = data[:,1]
   tb_avg = data[:,2]
   tb_std = data[:,3]
-  mu_avg = data[:,4]
+  mu = data[:,4]
   ax.errorbar((lat1+lat2)/2., tb_avg, yerr = tb_std,
     fmt = '.', color = '0.7', alpha = 0.5)
-  ax.step(lat1, tb_avg, 'C1', where = 'post')
-  tb_disk = (coeff[0]*pow(mu_avg, coeff[1]) + coeff[5]*pow(mu_avg, coeff[6]))/2.
-  ax.step(lat1, tb_disk, 'C0', where = 'post')
+  ax.step(lat1, tb_avg, 'C1', where = 'post', label = '%s band' % bands[i].upper())
+  tb_disk = (coeff[0]*pow(mu, coeff[1]) + coeff[5]*pow(mu, coeff[6]))/2.
+  ax.step(lat1, tb_disk, 'C0', where = 'post', label = '%s band disk' % bands[i].upper())
   ax.set_xlim([0., 90.])
-  ax.set_ylabel('%s T$_b$ (K)' % bands[i].upper(), fontsize = 10)
+  ax.set_ylabel('T$_b$ (K)', fontsize = 10)
   if i == nbands - 1:
     ax.set_xlabel('Planetographic Latitude (degree)', fontsize = 10)
+  ax.legend()
 
-show()
+savefig('../figs/saturn_tb_latitude.png', bbox_inches = 'tight')
